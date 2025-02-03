@@ -1,0 +1,28 @@
+[project]
+name = "lunch-menu"
+version = "0.1.0"
+description = "it's db about lunch menu"
+authors = [
+    {name = "jacob-53", email = "jacob8753@gmail.com"},
+]
+dependencies = ["pandas>=2.2.3"]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[dependency-groups]
+eda = [
+    "jupyterlab>=4.3.5",
+]
+test = [
+    "pytest>=8.3.4",
+]
+
