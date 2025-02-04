@@ -5,7 +5,7 @@ description = "it's db about lunch menu"
 authors = [
     {name = "jacob-53", email = "jacob8753@gmail.com"},
 ]
-dependencies = ["pandas>=2.2.3", "streamlit>=1.41.1"]
+dependencies = ["pandas>=2.2.3", "streamlit>=1.41.1", "matplotlib>=3.10.0"]
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
