@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import psycopg
 
 
-
 DB_CONFIG = { "dbname": "sunsindb",
              "user":"sunsin",
              "password":"mysecretpassword",
@@ -74,26 +73,31 @@ fig, ax = plt.subplots()
 gdf.plot(x='ename',y='menu',kind='bar',ax=ax)
 st.pyplot(fig)
 
-st.subheader("벌크인서트")
+st.subheader("벌크 인서트")
 isPress = st.button("한방에 인서트")
 
 if isPress:
-    conn = get_connection()
-    cursor = conn.cursor()
-    df = pd.read_csv('note/menu.csv')
-    start_idx = df.columns.get_loc('2025-01-07')
-    mdf = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2], var_name='dt', value_name='menu')
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        df = pd.read_csv('note/menu.csv')
+        start_idx = df.columns.get_loc('2025-01-07')
+        mdf = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2], var_name='dt', value_name='menu')
 
-    sdf=mdf.replace(["-","x","<결석>"], pd.NA)
-    adf=sdf.dropna()
-    blm = []
-    for i in adf.index: 
-        ename = adf.loc[i, "ename"]
-        dt = adf.loc[i, "dt"]
-        value = adf.loc[i, "menu"]
-        blm.append((value,ename,dt))
+        sdf=mdf.replace(["-","x","<결석>"], pd.NA)
+        adf=sdf.dropna()
+        blm = []
+        for i in adf.index: 
+            ename = adf.loc[i, "ename"]
+            dt = adf.loc[i, "dt"]
+            value = adf.loc[i, "menu"]
+            blm.append((value,ename,dt))
     
-    cursor.executemany("INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s)",blm)
-    conn.commit()
-    cursor.close()
-    st.success(f"벌크 인서트 완료")
+        cursor.executemany("INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s)",blm)
+        conn.commit()
+        st.success("벌크 인서트 완료")
+    except Exception: 
+        conn.rollback()
+        cursor.close()
+        st.warning("데이터가 중복되어 실행을 취소합니다")
+        
