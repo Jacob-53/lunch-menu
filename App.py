@@ -1,16 +1,49 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import psycopg
+
+
+
+DB_CONFIG = { "dbname": "sunsindb",
+             "user":"sunsin",
+             "password":"mysecretpassword",
+             "host":"localhost",
+             "port":"5432"
+            }
+
+def get_connection():
+    return psycopg.connect(**DB_CONFIG)
+
+conn = get_connection()
+cursor = conn.cursor()
+
 
 
 st.title("점심 뭐 먹었나요?")
+
+st.write("""### **Let's grab a bite and then finish this up** """)
 
 st.subheader("입력")
 menu_name= st.text_input("메뉴 이름", placeholder="예: 참치김밥")
 member_name = st.text_input("먹은 사람", value="jacob")
 dt = st.date_input("먹은날짜")
 
-st.write("""# **Let's grab a bite and then finish this up** """)
+isPress = st.button("Save data")
+if isPress:
+    if menu_name and member_name and dt:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
+               (menu_name,member_name,dt)
+        )
+        conn.commit()
+        cursor.close()
+        st.success(f"버튼{isPress}:{menu_name},{member_name},{dt}")
+    else:
+        st.warning(f"모든 값을 입력하세요")
+
 
 df = pd.read_csv('note/menu.csv')
 
