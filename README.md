@@ -7,6 +7,7 @@
 
 ## Install DB with Docker
 - https://hub.docker.com/_/postgres
+
 ```bash
 sudo docker run --name local-postgres \
 -e POSTGRES_USER=sunsin \
@@ -19,6 +20,7 @@ sudo docker run --name local-postgres \
 
 ## Create Table
 - postgres
+
 ```sql
 CREATE TABLE public.lunch_menu (
 	id serial4 NOT NULL,
@@ -31,11 +33,29 @@ CREATE TABLE public.lunch_menu (
 
 
 ## DEV
+
+- DB
 ```bash
 $ sudo docker start local-postgres
+
 $ sudo docker stop local-postgres
+
+# 도커 지우기
 $ sudo docker rm local-postgres
+
+# docker 실행상태 확인
 $ sudo docker ps -a 
+
+# 컨테이너 안에서 bash
 $ sudo docker exec -it local-postgres bash
 ```
 
+
+- RUN
+```bash
+# DB정보에 맞춰 수정
+$ cp env.dummy .env
+
+# 서버 시작
+$ streamlit run App.py
+```
