@@ -28,6 +28,7 @@ CREATE TABLE public.lunch_menu (
 	member_name text NOT NULL,
 	dt date NOT NULL,
 	CONSTRAINT lunch_menu_pk PRIMARY KEY (id)
+        CONSTRAINT lunch_menu_unique UNIQUE (menu_name, member_name, dt)
 );
 ```
 
