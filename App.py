@@ -20,6 +20,16 @@ def get_connection():
 conn = get_connection()
 cursor = conn.cursor()
 
+def insert_menu(menu_name,member_name,dt):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+            "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
+               (menu_name,member_name,dt)
+        )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 st.title("점심 뭐 먹었나요?")
@@ -34,15 +44,8 @@ dt = st.date_input("먹은날짜")
 isPress = st.button("Save data")
 if isPress:
     if menu_name and member_name and dt:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
-               (menu_name,member_name,dt)
-        )
-        conn.commit()
-        cursor.close()
-        st.success(f"버튼{isPress}:{menu_name},{member_name},{dt}")
+        insert_menu(menu_name,member_name,dt)
+        st.success(f"입력 성공")
     else:
         st.warning(f"모든 값을 입력하세요")
 
@@ -98,9 +101,12 @@ if isPress:
     
         cursor.executemany("INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s)",blm)
         conn.commit()
+        cursor.close()
+        conn.close()
         st.success("벌크 인서트 완료")
     except Exception: 
         conn.rollback()
         cursor.close()
+        conn.close()
         st.warning("데이터가 중복되어 실행을 취소합니다")
         
