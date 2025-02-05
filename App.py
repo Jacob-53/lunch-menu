@@ -2,13 +2,16 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import psycopg
+import os
+from dotenv import load_dotenv
 
-
-DB_CONFIG = { "dbname": "sunsindb",
-             "user":"sunsin",
-             "password":"mysecretpassword",
-             "host":"localhost",
-             "port":"5432"
+load_dotenv()
+DB_CONFIG = { "dbname": os.getenv("DB_NAME"),
+            #"user": st.secret["db_username"],
+             "user":os.getenv("DB_USERNAME"),
+             "password":os.getenv("DB_PASSWORD"),
+             "host":os.getenv("DB_HOST"),
+             "port":os.getenv("DB_PORT")
             }
 
 def get_connection():
