@@ -21,16 +21,23 @@ conn = get_connection()
 cursor = conn.cursor()
 
 def insert_menu(menu_name,member_name,dt):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-            "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
-               (menu_name,member_name,dt)
-        )
-    conn.commit()
-    cursor.close()
-    conn.close()
-
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+                "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
+                   (menu_name,member_name,dt)
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+    except Exception as e:
+        conn.rollback()
+        cursor.close()
+        conn.close()
+        print(f"Exception : {e}")
+        return False
 
 st.title("점심 뭐 먹었나요?")
 
@@ -38,14 +45,21 @@ st.write("""### **Let's grab a bite and then finish this up** """)
 
 st.subheader("입력")
 menu_name= st.text_input("메뉴 이름", placeholder="예: 참치김밥")
-member_name = st.text_input("먹은 사람", value="jacob")
-dt = st.date_input("먹은날짜")
+member_name =  st.selectbox(
+    "누가 먹었나요?",
+    ("Tom","jacob","amy","lucas","heejin","hyun","jiwon","nuni","JERRY","cho","SEO"),
+    index=None,placeholder="누가 먹었나요?",
+)
+st.write("점심 먹은 사람은",member_name)
+dt = st.date_input("언제 먹었나요?")
 
 isPress = st.button("Save data")
 if isPress:
     if menu_name and member_name and dt:
-        insert_menu(menu_name,member_name,dt)
-        st.success(f"입력 성공")
+        if insert_menu(menu_name,member_name,dt):
+           st.success(f"입력 성공")
+        else:
+            st.error(f"입력 실패")
     else:
         st.warning(f"모든 값을 입력하세요")
 
@@ -74,10 +88,13 @@ adf=sdf.dropna()
 
 gdf=selected_df.groupby('ename')['menu'].count().reset_index()
 gdf
-
-fig, ax = plt.subplots()
-gdf.plot(x='ename',y='menu',kind='bar',ax=ax)
-st.pyplot(fig)
+try:
+    fig, ax = plt.subplots()
+    gdf.plot(x='ename',y='menu',kind='bar',ax=ax)
+    st.pyplot(fig)
+except Exception as e:
+    st.warning(f"차트를 그리기에 충분한 데이터가 없습니다")
+    print(f"Exception: {e}")
 
 st.subheader("벌크 인서트")
 isPress = st.button("한방에 인서트")
@@ -104,9 +121,9 @@ if isPress:
         cursor.close()
         conn.close()
         st.success("벌크 인서트 완료")
-    except Exception: 
+    except Exception as e: 
         conn.rollback()
         cursor.close()
         conn.close()
-        st.warning("데이터가 중복되어 실행을 취소합니다")
-        
+        st.error("데이터가 중복되어 실행을 취소합니다")
+        print(f"Exception: {e}")
