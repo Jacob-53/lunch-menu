@@ -25,7 +25,7 @@ def insert_menu(menu_name,member_id,dt):
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-                "INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s);",
+                "INSERT INTO lunch_menu (menu_name,member_id,dt) VALUES (%s,%s,%s);",
                    (menu_name,member_id,dt)
             )
         conn.commit()
@@ -65,13 +65,21 @@ if isPress:
         st.warning(f"모든 값을 입력하세요")
 
 st.subheader("Result check")
-query = "select menu_name as menu,member_name as ename,dt from lunch_menu order by dt desc"
+#query = "select menu_name as menu,member_id as ename,dt from lunch_menu order by dt desc"
+query="""SELECT 
+    lunch_menu.menu_name AS menu, 
+    member.name AS ename, 
+    lunch_menu.dt 
+FROM member
+LEFT JOIN lunch_menu ON member.id = lunch_menu.member_id
+ORDER BY lunch_menu.dt DESC"""
 
 conn = get_connection()
 cursor = conn.cursor()
 cursor.execute(query)
 rows = cursor.fetchall()
 cursor.close()
+conn.close()
 
 
 selected_df = pd.DataFrame(rows,columns=['menu','ename','dt'])
