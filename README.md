@@ -30,6 +30,22 @@ CREATE TABLE public.lunch_menu (
 	CONSTRAINT lunch_menu_pk PRIMARY KEY (id)
         CONSTRAINT lunch_menu_unique UNIQUE (member_name, dt)
 );
+create table member(
+id serial NOT NULL,
+	name text unique  NOT NULL);
+
+insert into member(name)
+values 
+('TOM'),
+('cho'),
+('hyun'),
+('JERRY'),
+('SEO'),
+('jiwon'),
+('jacob'),
+('heejin'),
+('lucas'),
+('nuni');
 ```
 
 
