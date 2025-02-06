@@ -63,6 +63,37 @@ if isPress:
             st.error(f"입력 실패")
     else:
         st.warning(f"모든 값을 입력하세요")
+cdt = st.date_input("언제?")
+chekPress = st.button("입력 안 한 사람 누구냐?")
+queryy = """
+select
+    m.name,
+    count(l.id) as menc
+from
+	member m
+left join lunch_menu l
+on 
+	l.member_id = m.id and l.dt = '{cdt}'
+group by
+	m.id, m.name
+having 
+	count(l.id) = 0
+order by
+	menc desc
+"""
+if chekPress:
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(queryy,(cdt,))
+        rowss = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        st.success(f"조회 성공")
+        st.write(rowss)  
+    except Exception as e:
+        st.warning(f"조회 중 오류가 발생했습니다")
+        print(f"Exception: {e}")
 
 st.subheader("Result check")
 #query = "select menu_name as menu,member_id as ename,dt from lunch_menu order by dt desc"
@@ -71,7 +102,7 @@ query="""SELECT
     member.name AS ename, 
     lunch_menu.dt 
 FROM member
-LEFT JOIN lunch_menu ON member.id = lunch_menu.member_id
+INNER JOIN lunch_menu ON member.id = lunch_menu.member_id
 ORDER BY lunch_menu.dt DESC"""
 
 conn = get_connection()
@@ -106,9 +137,10 @@ except Exception as e:
     print(f"Exception: {e}")
 
 st.subheader("벌크 인서트")
-isPress = st.button("한방에 인서트")
 
-if isPress:
+onePress = st.button("한방에 인서트")
+
+if onePress:
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -119,13 +151,15 @@ if isPress:
         sdf=mdf.replace(["-","x","<결석>"], pd.NA)
         adf=sdf.dropna()
         blm = []
+        
+        members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
         for i in adf.index: 
             ename = adf.loc[i, "ename"]
             dt = adf.loc[i, "dt"]
             value = adf.loc[i, "menu"]
-            blm.append((value,ename,dt))
+            blm.append((value,members[ename],dt))
     
-        cursor.executemany("INSERT INTO lunch_menu (menu_name,member_name,dt) VALUES (%s,%s,%s)",blm)
+        cursor.executemany("INSERT INTO lunch_menu (menu_name,member_id,dt) VALUES (%s,%s,%s)",blm)
         conn.commit()
         cursor.close()
         conn.close()
