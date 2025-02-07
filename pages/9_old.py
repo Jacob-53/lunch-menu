@@ -3,16 +3,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from lunch_menu.db import get_connection, insert_menu, select_table
 
+st.set_page_config(page_title="old",page_icon="🐣")
+
+st.title("점심 뭐 먹었나요?")
+st.markdown("# Old Page")
+st.sidebar.header("Old Page")
+#st.write("""### **Let's grab a bite and then finish this up** """)
+
 
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
 
 conn = get_connection()
 cursor = conn.cursor()
 
-
-st.title("점심 뭐 먹었나요?")
-
-st.write("""### **Let's grab a bite and then finish this up** """)
 
 st.subheader("입력")
 menu_name= st.text_input("메뉴 이름", placeholder="예: 참치김밥")
