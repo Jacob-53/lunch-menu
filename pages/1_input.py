@@ -37,13 +37,4 @@ if isPress:
     else:
         st.warning(f"모든 값을 입력하세요")
 
-st.subheader("Result check")
-#query = "select menu_name as menu,member_id as ename,dt from lunch_menu order by dt desc"
-select_df= select_table()
-select_df #check chart
-
-gdf=select_df.groupby('ename')['menu'].count().reset_index()
-gdf
-
-menu_plot()
 
