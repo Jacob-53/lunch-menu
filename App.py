@@ -1,43 +1,15 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import psycopg
-import os
-from dotenv import load_dotenv
+from lunch_menu.db import get_connection, insert_menu, select_table
 
-load_dotenv()
-DB_CONFIG = { "dbname": os.getenv("DB_NAME"),
-            #"user": st.secret["db_username"],
-             "user":os.getenv("DB_USERNAME"),
-             "password":os.getenv("DB_PASSWORD"),
-             "host":os.getenv("DB_HOST"),
-             "port":os.getenv("DB_PORT")
-            }
+
+
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
-def get_connection():
-    return psycopg.connect(**DB_CONFIG)
 
 conn = get_connection()
 cursor = conn.cursor()
 
-def insert_menu(menu_name,member_id,dt):
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-                "INSERT INTO lunch_menu (menu_name,member_id,dt) VALUES (%s,%s,%s);",
-                   (menu_name,member_id,dt)
-            )
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return True
-    except Exception as e:
-        conn.rollback()
-        cursor.close()
-        conn.close()
-        print(f"Exception : {e}")
-        return False
 
 st.title("점심 뭐 먹었나요?")
 
@@ -70,16 +42,16 @@ select
     m.name,
     count(l.id) as menc
 from
-	member m
+    member m
 left join lunch_menu l
 on 
-	l.member_id = m.id and l.dt = %s
+    l.member_id = m.id and l.dt = %s
 group by
-	m.id, m.name
+    m.id, m.name
 having 
-	count(l.id) = 0
+    count(l.id) = 0
 order by
-	menc desc
+    menc desc
 """
 if chekPress:
     try:
@@ -104,37 +76,21 @@ if chekPress:
 
 st.subheader("Result check")
 #query = "select menu_name as menu,member_id as ename,dt from lunch_menu order by dt desc"
-query="""SELECT 
-    lunch_menu.menu_name AS menu, 
-    member.name AS ename, 
-    lunch_menu.dt 
-FROM member
-INNER JOIN lunch_menu ON member.id = lunch_menu.member_id
-ORDER BY lunch_menu.dt DESC"""
-
-conn = get_connection()
-cursor = conn.cursor()
-cursor.execute(query)
-rows = cursor.fetchall()
-cursor.close()
-conn.close()
-
-
-selected_df = pd.DataFrame(rows,columns=['menu','ename','dt'])
-selected_df
+select_df= select_table()
+select_df #check chart 
 
 df = pd.read_csv('note/menu.csv')
 
 start_idx = df.columns.get_loc('2025-01-07')
-mdf = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2], 
-                     var_name='dt', value_name='menu')
+mdf = df.melt(id_vars=['ename'], value_vars=df.columns[start_idx:-2], var_name='dt', value_name='menu')
 
 sdf=mdf.replace(["-","x","<결석>"], pd.NA)
 adf=sdf.dropna()
-#gdf=adf.groupby('ename')['menu'].count().reset_index()
+gdf=adf.groupby('ename')['menu'].count().reset_index()
 
-gdf=selected_df.groupby('ename')['menu'].count().reset_index()
+gdf=select_df.groupby('ename')['menu'].count().reset_index()
 gdf
+
 try:
     fig, ax = plt.subplots()
     gdf.plot(x='ename',y='menu',kind='bar',ax=ax)

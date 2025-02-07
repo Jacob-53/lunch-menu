@@ -1,6 +1,6 @@
 [project]
 name = "lunch-menu"
-version = "0.4.0"
+version = "0.5.0"
 description = "it's db about lunch menu"
 authors = [
     {name = "jacob-53", email = "jacob8753@gmail.com"},
