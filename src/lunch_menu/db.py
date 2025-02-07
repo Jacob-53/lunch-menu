@@ -4,15 +4,20 @@ import psycopg
 import os
 from dotenv import load_dotenv
 
-load_dotenv
+load_dotenv()
 
-DB_CONFIG = { "dbname": os.getenv("DB_NAME"),                                    "user":os.getenv("DB_USERNAME"),                                      "password":os.getenv("DB_PASSWORD"),                                  "host":os.getenv("DB_HOST"),                                          "port":os.getenv("DB_PORT")                                         
- }
+DB_CONFIG = { 
+    "dbname": os.getenv("DB_NAME"),
+    "user":os.getenv("DB_USERNAME"),
+    "password":os.getenv("DB_PASSWORD"),
+    "host":os.getenv("DB_HOST"),
+    "port":os.getenv("DB_PORT")                                         
+}
 
-def get_connection():                                                     return psycopg.connect(**DB_CONFIG)
+def get_connection():
+    return psycopg.connect(**DB_CONFIG)
 
 # 메뉴 입력기
-
 def insert_menu(menu_name,member_id,dt):
     try:
         conn = get_connection()
@@ -54,7 +59,6 @@ def select_table():
     return selected_df
 
 # 입력 안한 요원찾기 
-
 def chek_agents(cdt):
     queryy = """
         select
@@ -85,12 +89,13 @@ def chek_agents(cdt):
         else:
             cursor.close()
             conn.close()
-            return "모든 요원 입력 완료!"
-    except Exception as e:
-        print(f"Exception: {e}")
-        return "조회 중 오류가 발생했습니다"
+            return ("모든 요원 입력 완료!")
+    except Exception:
+        cursor.close()
+        conn.close()
+        return ("조회 중 오류가 발생했습니다")
 
-
+# 벌크 인서트
 def bulk_insert():
     try:                                                   
         conn = get_connection()

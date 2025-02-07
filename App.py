@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from lunch_menu.db import get_connection, insert_menu, select_table
 
 
-
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
 
 conn = get_connection()
