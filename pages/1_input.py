@@ -1,5 +1,6 @@
 import streamlit as st
-from lunch_menu.db import get_connection, insert_menu
+from lunch_menu.db import get_connection, insert_menu, select_table, menu_plot
+
 
 st.set_page_config(page_title="점심 뭐 먹었나요?", page_icon="🍱")
 
@@ -35,3 +36,14 @@ if isPress:
             st.error(f"입력 실패")
     else:
         st.warning(f"모든 값을 입력하세요")
+
+st.subheader("Result check")
+#query = "select menu_name as menu,member_id as ename,dt from lunch_menu order by dt desc"
+select_df= select_table()
+select_df #check chart
+
+gdf=select_df.groupby('ename')['menu'].count().reset_index()
+gdf
+
+menu_plot()
+
