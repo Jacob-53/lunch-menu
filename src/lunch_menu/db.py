@@ -5,6 +5,7 @@ import os
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 import time
+from datetime import datetime
 
 
 
@@ -176,35 +177,37 @@ def bulk_insert():
         return st.warning(f"오류 발생 ; {e}")
 
 # 오늘 미입력자 전광판
-def today_agent():
-    query= """
+def today_agents(tdd):
+    query = """
         select
-            m.name,m.id,l.menu_name, l.dt
+            m.name,count(l.id) as menc
         from
             member m
         left join lunch_menu l
         on
-            l.member_id = m.id and l.dt = CURRENT_DATE AT TIME ZONE 'ASIA/SEOUL'
-        group by m.id, m.name, l.menu_name, l.dt
+            l.member_id = m.id and l.dt = %s
+        group by
+            m.id, m.name
         having
-            l.dt IS null """
+            count(l.id) = 0
+        order by
+            menc desc"""
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute(query)
+        cursor.execute(query,(tdd,))
         rows = cursor.fetchall()
-        fdf=pd.DataFrame(rows,columns=['name','member id','menu name','dt'])
+        fdf=pd.DataFrame(rows,columns=['name','count'])
         sunsinagents=fdf['name'].tolist()
         if len(sunsinagents) >=1:
             #st.text(",  ".join(sunsinagents))
             cursor.close()
             conn.close()
-            return ",  ".join(sunsinagents)"
+            return ",  ".join(sunsinagents)
         else:
             cursor.close()
             conn.close()
             return "모든 요원 입력 완료!"
-
     except Exception:
         cursor.close()
         conn.close()
