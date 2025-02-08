@@ -4,6 +4,10 @@ import psycopg
 import os
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
+import time
+from datetime import datetime
+
+
 
 load_dotenv()
 
@@ -171,3 +175,40 @@ def bulk_insert():
         conn.close()
         print(f"Exception: {e}")
         return st.warning(f"오류 발생 ; {e}")
+
+# 오늘 미입력자 전광판
+def today_agents(tdd):
+    query = """
+        select
+            m.name,count(l.id) as menc
+        from
+            member m
+        left join lunch_menu l
+        on
+            l.member_id = m.id and l.dt = %s
+        group by
+            m.id, m.name
+        having
+            count(l.id) = 0
+        order by
+            menc desc"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query,(tdd,))
+        rows = cursor.fetchall()
+        fdf=pd.DataFrame(rows,columns=['name','count'])
+        sunsinagents=fdf['name'].tolist()
+        if len(sunsinagents) >=1:
+            #st.text(",  ".join(sunsinagents))
+            cursor.close()
+            conn.close()
+            return ",  ".join(sunsinagents)
+        else:
+            cursor.close()
+            conn.close()
+            return "모든 요원 입력 완료!"
+    except Exception:
+        cursor.close()
+        conn.close()
+        return "조회 중 오류가 발생했습니다"
