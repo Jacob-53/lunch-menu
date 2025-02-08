@@ -13,8 +13,8 @@ st.markdown("**순신샵 맴버들의 점심메뉴를 확인 할 수 있습니�
 st.markdown(''' :rainbow[좌측 혹은 아래에 있는 링크를 선택하면] **:red[순신샵 맴버]들의 :blue[점심메뉴]를 확인 할 수 있습니다**''')
 with mid:
     st.image("./src/images/donut-simpson.gif", caption=None, use_container_width=True)
-st.page_link("App.py", label = "Main")
-st.page_link("pages/Input_lunch_menu.py", label = "Input lunch menu")
-st.page_link("pages/Check_Agent.py", label = "Show unsubmitted agent")
-st.page_link("pages/Statistics.py", label = "Statistics")
-st.page_link("pages/Bulk_insert.py", label = "Bulk insert")
+st.page_link("Main.py", label = "Main")
+st.page_link("pages/1_Input_lunch_menu.py", label = "Input lunch menu")
+st.page_link("pages/2_Check_Agent.py", label = "Show unsubmitted agent")
+st.page_link("pages/3_Statistics.py", label = "Statistics")
+st.page_link("pages/4_Bulk_insert.py", label = "Bulk insert")
