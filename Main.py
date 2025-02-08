@@ -1,8 +1,22 @@
 import streamlit as st
-from lunch_menu.db import get_connection, insert_menu, select_table, menu_plot
+import time
+from lunch_menu.db import get_connection, insert_menu, select_table, menu_plot, today_agent
 
 
 st.set_page_config(page_title="점심 Check!! 뭐 먹었나요?", page_icon="🍱")
+st.subheader("**오늘 점심 미입력자**")
+
+return_text = today_agent()
+display_area = st.empty()
+colors = ["red", "orange", "yellow", "green", "blue", "purple"]
+while True:
+    for color in colors:
+        display_area.markdown(
+                f'<h1 style="color:{color}; text-align:center;">{return_text}</h1>',
+                unsafe_allow_html=True
+        )
+        #st.subheader(sub_text)
+        time.sleep(0.5)
 
 st.title("점심 뭐 먹었나요?")
 st.markdown("### Let's grab a bite and then finish this up") 
